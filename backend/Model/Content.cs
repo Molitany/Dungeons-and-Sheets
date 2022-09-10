@@ -9,6 +9,6 @@ namespace backend.Model
         public int Id { get; set; }
         public int PlayerId { get; set; }
         [ForeignKey("PlayerId")]
-        public Player Player { get; set; }
+        public User User { get; set; }
     }
 }
