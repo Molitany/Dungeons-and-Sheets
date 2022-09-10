@@ -15,19 +15,21 @@ namespace backend.Database
         }
         public DbSet<Character> Characters { get; set; }
         //public DbSet<Content> Content { get; set; }
-        public DbSet<Player> Players { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Session> Sessions { get; set; }
+
         public DbSet<TTRPGSystem> Systems { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var TrulyTest = new Player { Id = 1, Name = "TrulyTest", Password = "password" };
-            modelBuilder.Entity<Player>().HasData(
+            var TrulyTest = new User { Id = 1, Name = "TrulyTest", Password = "password" };
+            modelBuilder.Entity<User>().HasData(
                 TrulyTest
             );
 
             var bobby = new Character
             {
                 Id = 1,
-                PlayerId = 1,
+                UserId = 1,
                 Name = "Bobby King",
                 Sex = "Male",
                 HairColor = "Brown",

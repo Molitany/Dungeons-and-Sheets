@@ -7,9 +7,9 @@ namespace backend.Model
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public int PlayerId { get; set; }
-        [ForeignKey("PlayerId")]
-        public Player Player { get; set; }
+        public int UserId { get; set; }
+        [ForeignKey("UserId")]
+        public User User { get; set; }
         public string Name { get; set; }
         public string Sex { get; set; }
         public string HairColor { get; set; }
