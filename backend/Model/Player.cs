@@ -11,7 +11,7 @@ namespace backend.Model
         public string Name { get; set; }
         [DataType(DataType.Password)]
         public string Password { get; set; } //Stored as hashed and salted base64 encoding
-        public Content Content { get; set; }
+        //public Content Content { get; set; }
 
     }
 }
