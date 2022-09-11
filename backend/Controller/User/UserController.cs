@@ -43,5 +43,12 @@ namespace backend.Controller.User
             _userService.Logout(user);
             return user;
         }
+
+        [HttpGet]
+        [Route("status")]
+        public string Status()
+        {
+            return "ok";
+        }
     }
 }
