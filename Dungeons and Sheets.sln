@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "frontend", "Frontend\frontend.esproj", "{36D0FB14-FA2C-46BF-8A4C-E0BD20B2E099}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "frontend", "frontend\frontend.esproj", "{36D0FB14-FA2C-46BF-8A4C-E0BD20B2E099}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F249BA73-E1DD-4FDE-BD6B-3CD011DD308F} = {F249BA73-E1DD-4FDE-BD6B-3CD011DD308F}
 	EndProjectSection
