@@ -8,8 +8,8 @@ namespace backend.Controller.User
 {
     public class UserService
     {
-        DnD5eContext _context;
-        public UserService(DnD5eContext context)
+        DatabaseContext _context;
+        public UserService(DatabaseContext context)
         {
             _context = context;
         }

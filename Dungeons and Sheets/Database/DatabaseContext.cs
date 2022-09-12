@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Database
 {
-    public class DnD5eContext : DbContext
+    public class DatabaseContext : DbContext
     {
-        public DnD5eContext(DbContextOptions<DnD5eContext> options) : base(options)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -7,15 +7,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllersWithViews().AddNewtonsoftJson();
-builder.WebHost.UseUrls("0.0.0.0:5000");
+builder.WebHost.UseUrls("https://*:5000", "http://*:5001");
 builder.Services.AddEndpointsApiExplorer();
 var serverVersion = new MySqlServerVersion(new Version(8, 0, 30));
-builder.Services.AddDbContext<DnD5eContext>(options => options.UseMySql(builder.Configuration.GetConnectionString("string"), serverVersion));
+builder.Services.AddDbContext<DatabaseContext>(options => options.UseMySql(builder.Configuration.GetConnectionString("string"), serverVersion));
 builder.Configuration.AddJsonFile("appsettings.json");
 builder.Services.AddTransient<UserService>();
 
 var app = builder.Build();
 
+ApplyPendingMigrations(app.Services);
 
 
 // Configure the HTTP request pipeline.
@@ -37,3 +38,14 @@ app.MapControllerRoute(
 app.MapFallbackToFile("index.html"); ;
 
 app.Run();
+
+async void ApplyPendingMigrations(IServiceProvider services)
+{
+    var scope = services.CreateScope();
+    var _context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+    var pendingMigrations = await _context.Database.GetPendingMigrationsAsync();
+    if (pendingMigrations.Count() > 0)
+    {
+        await _context.Database.MigrateAsync();
+    }
+}

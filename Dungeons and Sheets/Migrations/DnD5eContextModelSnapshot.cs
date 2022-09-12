@@ -8,7 +8,7 @@ using backend.Database;
 
 namespace backend.Migrations
 {
-    [DbContext(typeof(DnD5eContext))]
+    [DbContext(typeof(Database.DatabaseContext))]
     partial class DnD5eContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
