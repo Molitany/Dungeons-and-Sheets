@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import { useNavigate } from "react-router-dom"
 import useAuth, { AuthProvider } from "./AuthProvider/Auth";
+import Signup from './pages/SignupPage/Signup';
 
 function AuthenticatedRoute({ ...props }: RouteProps) {
   const { user } = useAuth()
@@ -36,7 +37,7 @@ function Router() {
       />
       <Route
         path="/SignUp"
-        element={<Login />}
+        element={<Signup />}
       />
     </Routes>
   );
