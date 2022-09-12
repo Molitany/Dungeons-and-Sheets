@@ -36,7 +36,7 @@ function Router() {
       />
       <Route
         path="/SignUp"
-        element={<Login />}
+        element={<Signup />}
       />
     </Routes>
   );
