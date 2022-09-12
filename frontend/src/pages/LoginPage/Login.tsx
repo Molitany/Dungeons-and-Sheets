@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 
 import { useState, useEffect } from "react"
-import useAuth from "../../AuthProvider/Auth"
+import useAuth from "../../Components/AuthProvider/Auth"
 
 function Login() {
   const { login, signUp } = useAuth();
