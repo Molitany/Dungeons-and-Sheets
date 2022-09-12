@@ -4,10 +4,15 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import  Button from 'react-bootstrap/Button';
 import useAuth from '../AuthProvider/Auth'
+import { useNavigate } from 'react-router-dom';
 
 function DASNavbar() {
+    let navigate = useNavigate()
     const { logout } = useAuth()
-
+    const logOut = () => {
+        logout()
+        navigate('/Login')
+    }
     return (
         <Navbar bg="dark" expand="lg" variant="dark">
             <Container>
@@ -20,7 +25,7 @@ function DASNavbar() {
                     </Nav>
                     <Nav>
                         <Nav>
-                            <Button variant="danger" onClick={() => logout()}>Logout</Button>
+                            <Button variant="danger" onClick={() => logOut()}>Logout</Button>
                         </Nav>
                     </Nav>
                 </Navbar.Collapse>
