@@ -1,5 +1,6 @@
 using backend.Controller.User;
 using backend.Database;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,16 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
+
+app.UseSpa(spa =>
+{
+    spa.Options.SourcePath = "ClientApp";
+
+    if (app.Environment.IsDevelopment())
+    {
+        spa.UseReactDevelopmentServer("start");
+    }
+});
 
 app.MapControllerRoute(
     name: "default",

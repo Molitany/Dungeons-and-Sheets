@@ -1,5 +1,5 @@
 {
-  "name": "project1",
+  "name": "clientapp",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -63,11 +63,6 @@
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint ./src/"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
   },
   "browserslist": {
     "production": [
