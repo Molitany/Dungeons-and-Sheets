@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import Landing from './pages/LandingPage/Landing'
 import Login from './pages/LoginPage/Login'
+import SignUp from './pages/SignUpPage/SignUp'
+import { useNavigate } from "react-router-dom"
+import useAuth, { AuthProvider } from "./Components/AuthProvider/Auth";
 import {
   BrowserRouter,
   Routes,
   Route,
   RouteProps
 } from "react-router-dom";
-import { useNavigate } from "react-router-dom"
-import useAuth, { AuthProvider } from "./Components/AuthProvider/Auth";
+
 
 function AuthenticatedRoute({ ...props }: RouteProps) {
   const { user } = useAuth()
   let navigate = useNavigate()
-  console.log("BIG:" + user)
+
   useEffect(() => {
     if (!user){
       navigate("../Login")
@@ -36,7 +38,7 @@ function Router() {
       />
       <Route
         path="/SignUp"
-        element={<Signup />}
+        element={<SignUp />}
       />
     </Routes>
   );

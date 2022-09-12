@@ -6,9 +6,9 @@ import Card from 'react-bootstrap/Card';
 import { useNavigate } from "react-router-dom";
 import './../Signin.css'
 import { useState, useEffect } from "react"
-import useAuth from "../../AuthProvider/Auth"
+import useAuth from "../../Components/AuthProvider/Auth"
 
-function Signup() {
+function SignUp() {
   const { signUp } = useAuth();
   let navigate = useNavigate();
 
@@ -54,4 +54,4 @@ function Signup() {
   )
 }
 
-export default Signup;
+export default SignUp;
