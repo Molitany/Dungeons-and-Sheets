@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllersWithViews().AddNewtonsoftJson();
-
+builder.WebHost.UseUrls("0.0.0.0:5000");
 builder.Services.AddEndpointsApiExplorer();
 var serverVersion = new MySqlServerVersion(new Version(8, 0, 30));
 builder.Services.AddDbContext<DnD5eContext>(options => options.UseMySql(builder.Configuration.GetConnectionString("string"), serverVersion));
