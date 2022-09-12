@@ -8,8 +8,7 @@ import {
   RouteProps
 } from "react-router-dom";
 import { useNavigate } from "react-router-dom"
-import useAuth, { AuthProvider } from "./AuthProvider/Auth";
-import Signup from './pages/SignupPage/Signup';
+import useAuth, { AuthProvider } from "./Components/AuthProvider/Auth";
 
 function AuthenticatedRoute({ ...props }: RouteProps) {
   const { user } = useAuth()
