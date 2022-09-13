@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Landing from './pages/LandingPage/Landing'
 import Login from './pages/LoginPage/Login'
+import CharacterBuilder from './pages/CharacterBuilder/CharacterBuilder';
 import {
   BrowserRouter,
   Routes,
@@ -15,11 +16,11 @@ function AuthenticatedRoute({ ...props }: RouteProps) {
   let navigate = useNavigate()
   console.log("BIG:" + user)
   useEffect(() => {
-    if (!user){
+    if (!user) {
       navigate("../Login")
     }
   })
-  
+
   return <Landing />;
 }
 
@@ -37,6 +38,10 @@ function Router() {
       <Route
         path="/SignUp"
         element={<Login />}
+      />
+      <Route
+        path="/CharacterBuilder"
+        element={<CharacterBuilder />}
       />
     </Routes>
   );
