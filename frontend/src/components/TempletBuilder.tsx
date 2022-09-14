@@ -1,6 +1,5 @@
 import react from 'react';
-import { Form } from 'react-bootstrap';
-import Container from 'react-bootstrap/Container';
+import { Col, Container, Form, Row } from 'react-bootstrap';
 
 export default function TempletBuilder(props: { systemTemplet: any }) {
 
@@ -19,7 +18,6 @@ export default function TempletBuilder(props: { systemTemplet: any }) {
     )
 }
 
-
 function InputText(props: { title: string; type: string; id: string; }) {
 
     return (
@@ -33,16 +31,17 @@ function InputText(props: { title: string; type: string; id: string; }) {
     )
 }
 
-function Text(props: { text: string }) {
+function Text(props: { text: string, style: { className: string, css: any } }) {
 
     return (
-        <>
-            <span>{props.text}</span>
-        </>
+        <span
+            className={props.style?.className}
+            style={props.style?.css}
+        >{props.text}</span>
     )
 }
 
-function Select(props: { options: any }) {
+function Select(props: { options: any, style: { className: string, css: any } }) {
 
     let elementOptions: any = []
 
@@ -51,23 +50,51 @@ function Select(props: { options: any }) {
     })
 
     return (
-        <>
-            <Form.Select>
-                {elementOptions}
-            </Form.Select>
-        </>
+        <Form.Select
+            className={props.style?.className}
+            style={props.style?.css}>
+            {elementOptions}
+        </Form.Select>
     )
 }
 
 function ContainerElement(props: any) {
     return (
-        <>
-            <Container>{TempletBuilder({ systemTemplet: props })}</Container>
-        </>
+        <Container
+            className={props.style?.className}
+            style={props.style?.css}>
+            {TempletBuilder(props)}
+        </Container>
     )
 }
 
+// function DivContainer(props: { className: string, element: any }) {
 
+//     return (
+//         <div className={props.className}>{props.element}</div>
+//     )
+
+// }
+
+function RowElement(props: any) {
+    return (
+        <Row
+            className={props.style?.className}
+            style={props.style?.css}>
+            {TempletBuilder(props)}
+        </Row>
+    )
+}
+
+function ColElement(props: any) {
+    return (
+        <Col
+            className={props.style?.className}
+            style={props.style?.css}>
+            {TempletBuilder(props)}
+        </Col>
+    )
+}
 
 
 
@@ -75,7 +102,10 @@ const elementSwitch: { [K: string]: Function } = {
     InputText: InputText,
     Text: Text,
     Select: Select,
-    Container: ContainerElement
+    Container: ContainerElement,
+    // Div: DivContainer,
+    Row: RowElement,
+    Col: ColElement
 };
 
 export function element(name: string, props: any) {
