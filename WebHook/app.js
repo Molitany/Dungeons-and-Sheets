@@ -18,9 +18,12 @@ app.post("/payload", (req, res) => {
             child.on('exit', () => {
                 let child = exec("dotnet publish -c Release -o ./Build", ExecCallback)
                 child.on('exit', () => {
-                    exec("./Dungeons\\ and\\ Sheets & disown", {
-                        cwd: './Build'
-                    }, ExecCallback)
+                    let child = exec("kill $(ps aux | grep Dungeon | awk '{print $2}')", ExecCallback)
+                    child.on('exit', () => {
+                        exec("./Dungeons\\ and\\ Sheets & disown", {
+                            cwd: './Build'
+                        }, ExecCallback)    
+                    })
                 })
             })
         })
