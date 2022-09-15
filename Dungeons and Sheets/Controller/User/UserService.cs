@@ -25,13 +25,14 @@ namespace backend.Controller.User
         }
         public UserDTO Login(UserDTO user)
         {
-            var userInDb = _context.Users.Where(u => u.Email == user.Email && u.Password == user.Password).First();
+            var userInDb = _context.Users.Where(u => u.Email == user.Email && u.Password == user.Password).FirstOrDefault();
             if (userInDb != null)
             {
                 _context.Add(new Session { user = userInDb, sessionId = GenerateSessionId() });
                 _context.SaveChanges();
+                return new UserDTO { Email = userInDb.Email, Password = userInDb.Password };
             }
-            return new UserDTO { Email = userInDb.Email, Password = userInDb.Password };
+            return null;
         }
         public string GetSessionId(UserDTO user)
         {
@@ -41,7 +42,7 @@ namespace backend.Controller.User
         public UserDTO CheckSession(string id)
         {
             var session = _context.Sessions.Include(s => s.user).Where(s => s.sessionId == id).FirstOrDefault();
-            if (session == null) 
+            if (session == null)
                 return null;
             var userInSession = session.user;
             return new UserDTO { Email = userInSession.Email, Password = userInSession.Password, Name = userInSession.Name };
@@ -55,7 +56,7 @@ namespace backend.Controller.User
         public void Logout(UserDTO user)
         {
             var session = _context.Sessions.Where(s => s.user == _context.Users.Where(u => u.Email == user.Email && u.Password == user.Password).First()).First();
-            if (session == null) 
+            if (session == null)
                 return;
             _context.Sessions.Remove(session);
             _context.SaveChanges();
