@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Landing from './pages/LandingPage/Landing'
 import Login from './pages/LoginPage/Login'
-import SignUp from './pages/SignUpPage/SignUp'
+import SignUp from './pages/SignupPage/Signup'
 import { useNavigate } from "react-router-dom"
 import useAuth, { AuthProvider } from "./Components/AuthProvider/Auth";
 import {
