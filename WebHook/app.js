@@ -16,12 +16,10 @@ app.post("/payload", (req, res) => {
         child.on('exit', () => {
             let child = exec("git pull", ExecCallback)
             child.on('exit', () => {
-                let child = exec("dotnet publish -c Release -o ./Build", {
-                    cwd: '../'
-                }, ExecCallback)
+                let child = exec("dotnet publish -c Release -o ./Build", ExecCallback)
                 child.on('exit', () => {
                     exec("./Dungeons\ and\ Sheets & disown", {
-                        cwd: '../Build'
+                        cwd: './Build'
                     }, ExecCallback)
                 })
             })
