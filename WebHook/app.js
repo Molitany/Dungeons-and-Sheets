@@ -12,14 +12,20 @@ app.use(bodyParser.json())
 
 app.post("/payload", (req, res) => {
     if ((req.body.pusher && req.body.ref.split("/").pop() == "master") || (req.body.action == "closed" && req.body.pull_request.base.ref == "master")) {
-        exec("git fetch", ExecCallback)
-        exec("git pull", ExecCallback)
-        exec("dotnet publish -c Release -o ./Build", {
-            cwd: '../'
-        }, ExecCallback)
-        exec("./Dungeons\ and\ Sheets & disown", {
-            cwd: '../Build'
-        }, ExecCallback)
+        let child = exec("git fetch", ExecCallback)
+        child.on('exit', () => {
+            let child = exec("git pull", ExecCallback)
+            child.on('exit', () => {
+                let child = exec("dotnet publish -c Release -o ./Build", {
+                    cwd: '../'
+                }, ExecCallback)
+                child.on('exit', () => {
+                    exec("./Dungeons\ and\ Sheets & disown", {
+                        cwd: '../Build'
+                    }, ExecCallback)
+                })
+            })
+        })
     }
     res.status(200).end() // Responding is important
 })
@@ -32,5 +38,12 @@ app.get("/payload", (req, res) => {
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
 
 function ExecCallback(error, stdout, stderr){
-    
+    if (error) {
+        console.warn(error);
+    } else if (stdout) {
+        console.log(stdout); 
+    } else {
+        console.log(stderr);
+    }
+
 }
