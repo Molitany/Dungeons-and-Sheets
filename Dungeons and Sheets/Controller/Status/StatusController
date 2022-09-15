@@ -1,0 +1,21 @@
+using Microsoft.AspNetCore.Mvc;
+using backend.Model.DTO;
+
+namespace backend.Controller.User
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class StatusController : ControllerBase
+    {
+        public StatusController()
+        { }
+
+        [HttpGet]
+        public string Status()
+        {
+            return "ok";
+        }
+    }
+}
+
+        
