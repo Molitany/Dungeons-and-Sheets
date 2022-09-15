@@ -20,7 +20,12 @@ app.post("/payload", (req, res) => {
                 child.on('exit', () => {
                     let child = exec("pkill Dungeons", ExecCallback)
                     child.on('exit', () => {
-                        exec("./Dungeons\\ and\\ Sheets & disown", {
+                        exec("./Dungeons\\ and\\ Sheets &", {
+                            cwd: './Build'
+                        }, ExecCallback)    
+                    })
+                    child.on('error', () => {
+                        exec("./Dungeons\\ and\\ Sheets &", {
                             cwd: './Build'
                         }, ExecCallback)    
                     })
