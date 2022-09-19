@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Landing from './pages/LandingPage/Landing'
 import Login from './pages/LoginPage/Login'
-import CharacterBuilder from './pages/CharacterBuilder/CharacterBuilder';
+import CharacterBuilder from './pages/CharacterBuilderPage/CharacterBuilder';
+import { SystemBuilder } from './pages/SystemBuilderPage/SystemBuilder'
 import {
   BrowserRouter,
   Routes,
@@ -42,6 +43,10 @@ function Router() {
       <Route
         path="/CharacterBuilder"
         element={<CharacterBuilder />}
+      />
+      <Route
+        path="/SystemBuilder"
+        element={<SystemBuilder />}
       />
     </Routes>
   );
