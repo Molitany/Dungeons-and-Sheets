@@ -1,9 +1,8 @@
 import React, { SyntheticEvent, useEffect, useState } from 'react';
-import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 import ElementToJason from '../../Helper/ElementPaser'
 import "./SystemBuilder.css"
 let systemMode = false
-
 
 interface TSXProp {
     id: string
@@ -14,39 +13,72 @@ interface TSXProp {
     onClick?: Function
     text?: string
 }
+
+const tsxProps = [
+    "id",
+    "type",
+    "value",
+    "style",
+    "options",
+    "onclick",
+    "text"
+]
+
 interface TSX {
     element: string
     props: TSXProp
     children?: TSX[]
 }
 function SystemBuilder() {
-    systemMode = true
+    // systemMode = true
 
     const handleClose = () => setShowBuilder(false);
 
-    function builder(event: any, id: string) {
+    function Builder(event: any, id: string) {
         event.stopPropagation()
 
         let element = FindElement([], id, tempJSON)
-        console.log(element);
-
         if (!element)
             return
 
         setParentID(id)
         setShowBuilder(true)
-        console.log(id)
-        console.log(element)
     }
-
     const [parentID, setParentID] = useState<string>("")
     const [tempJSON, setTempJSON] = useState<TSX[]>([
         {
-            element: "Container", props: { id: "root", onClick: builder, style: { css: { minHeight: "200px", border: "1px solid" } } }, children: [
-                { element: "Row", props: { id: "row1", onClick: builder, text: "New: Row" }, children: [] }]
+            element: "Container", props: { id: "root", onClick: Builder, style: { css: { border: "1px solid" } }, text: "New Container" }, children: []
         }]);
 
     const [showBuilder, setShowBuilder] = useState(false);
+
+    function PropsObject(obj: any) {
+
+    }
+
+    function InsertProps() {
+        let parent: any = FindElement([], parentID, tempJSON)
+        if (!parent)
+            return
+
+        let propsElements: Array<JSX.Element> = []
+        tsxProps.forEach(key => {
+            propsElements.push(
+                <Row>
+                    <Col className="d-grid gap-4">
+                        <InputGroup>
+                            <InputGroup.Text className="col-2">{key}</InputGroup.Text>
+                            <Form.Control as="textarea" aria-label="With textarea" defaultValue={parent.props?.[key]} />
+                        </InputGroup>
+                    </Col>
+                </Row>
+            )
+        })
+
+        return (
+            <Container fluid="md">{propsElements}</Container>
+        )
+    }
 
     function InsertOptions() {
 
@@ -71,19 +103,13 @@ function SystemBuilder() {
         if (!parent.children)
             parent.children = []
 
-        let newChild: TSX = { element: childElement, props: { id: `${newId++}`, text: `New: ${childElement}`, onClick: builder } }
+        parent.props.text = ""
 
-        console.log("Added element")
-        console.log(newChild)
+        let newChild: TSX = { element: childElement, props: { id: `${newId++}`, text: `New: ${childElement}`, style: { css: { border: "1px solid" } }, onClick: Builder } }
 
         parent.children.push(newChild)
 
-        setTempJSON(JSON.parse(JSON.stringify(tempJSON)))
         setTempJSON([DeepCopy(tempJSON[0])])
-        let temp1 = JSON.parse(JSON.stringify(tempJSON))
-        let temp2 = [DeepCopy(tempJSON[0])]
-
-        console.log(tempJSON)
     }
     function DeepCopy(obj: any) {
         let deepCopy: any = {}
@@ -106,15 +132,15 @@ function SystemBuilder() {
         <>
             {TempletBuilder(tempJSON)}
 
-            <Modal style={{ marginRight: "0px" }} show={showBuilder} onHide={handleClose} backdrop={false}>
+            <Modal style={{ marginRight: "0px" }} show={showBuilder} onHide={handleClose} >
                 <Modal.Header closeButton>
                     <Modal.Title>Builder Options on id: {parentID}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {InsertOptions()}
+                    {InsertProps()}
                 </Modal.Body>
                 <Modal.Footer>
-
+                    {InsertOptions()}
                 </Modal.Footer>
             </Modal>
         </>
@@ -139,7 +165,6 @@ function FindElement(queue: TSX[], id: string, perent?: TSX[]): TSX | null {
 
     if (element.children)
         queue.push(...element.children)
-
 
     return FindElement(queue, id)
 }
@@ -183,7 +208,8 @@ function Text(props: TSXProp) {
             style={props.style?.css}
             key={props.id}
         >
-            {props.text}</span>
+            {props.text}
+        </span>
     )
 }
 
@@ -256,14 +282,11 @@ function ColElement(props: TSXProp, children: TSX[]) {
     )
 }
 
-
-
 const elementSwitch: { [K: string]: Function } = {
     InputText: InputText,
     Text: Text,
     Select: Select,
     Container: ContainerElement,
-    // Div: DivContainer,
     Row: RowElement,
     Col: ColElement
 };
