@@ -27,28 +27,25 @@ function SystemBuilder() {
     function builder(event: any, id: string) {
         event.stopPropagation()
 
-        console.log(event);
-        let element = FindElement(tempJSON, id)
-
-        if (event.taget === event.currentTarget) {
-            // 👇 your logic here
-        }
+        let element = FindElement([], id, tempJSON)
+        console.log(element);
 
         if (!element)
             return
 
-        setBuildObject(element)
+        setParentID(id)
         setShowBuilder(true)
         console.log(id)
         console.log(element)
     }
-    const [buildObject, setBuildObject] = useState<TSX>()
-    //// copy tempJSON
+
+    const [parentID, setParentID] = useState<string>("")
     const [tempJSON, setTempJSON] = useState<TSX[]>([
         {
             element: "Container", props: { id: "root", onClick: builder, style: { css: { minHeight: "200px", border: "1px solid" } } }, children: [
                 { element: "Row", props: { id: "row1", onClick: builder, text: "New: Row" }, children: [] }]
         }]);
+
     const [showBuilder, setShowBuilder] = useState(false);
 
     function InsertOptions() {
@@ -56,15 +53,17 @@ function SystemBuilder() {
         let options: Array<JSX.Element> = []
 
         Object.keys(elementSwitch).forEach((element) => {
-            options.push(<Row onClick={() => AddElement(buildObject, element)} style={{ border: "1px solid" }}><Col>{element}</Col></Row>)
+            options.push(<Row onClick={() => AddElement(parentID, element)}><Col className="d-grid gap-4"><Button variant="secondary">{element}</Button></Col></Row>)
         })
 
         return (
-            <>{options}</>
+            <Container fluid="md">{options}</Container>
         )
     }
 
-    function AddElement(parent: TSX | undefined, childElement: string) {
+    function AddElement(parentID: string, childElement: string) {
+
+        let parent = FindElement([], parentID, tempJSON)
 
         if (!parent)
             return
@@ -74,9 +73,34 @@ function SystemBuilder() {
 
         let newChild: TSX = { element: childElement, props: { id: `${newId++}`, text: `New: ${childElement}`, onClick: builder } }
 
-        parent.children.push(newChild)
-    }
+        console.log("Added element")
+        console.log(newChild)
 
+        parent.children.push(newChild)
+
+        setTempJSON(JSON.parse(JSON.stringify(tempJSON)))
+        setTempJSON([DeepCopy(tempJSON[0])])
+        let temp1 = JSON.parse(JSON.stringify(tempJSON))
+        let temp2 = [DeepCopy(tempJSON[0])]
+
+        console.log(tempJSON)
+    }
+    function DeepCopy(obj: any) {
+        let deepCopy: any = {}
+
+        Object.keys(obj).forEach((key: string) => {
+            if (Array.isArray(obj[key])) {
+                deepCopy[key] = []
+                for (let i = 0; i < obj[key].length; i++) {
+                    deepCopy[key][i] = DeepCopy(obj[key][i])
+                }
+            }
+            else {
+                deepCopy[key] = obj[key]
+            }
+        })
+        return deepCopy
+    }
 
     return (
         <>
@@ -84,11 +108,11 @@ function SystemBuilder() {
 
             <Modal style={{ marginRight: "0px" }} show={showBuilder} onHide={handleClose} backdrop={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Builder Options on id: {buildObject?.props.id}</Modal.Title>
+                    <Modal.Title>Builder Options on id: {parentID}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body><Container>
+                <Modal.Body>
                     {InsertOptions()}
-                </Container></Modal.Body>
+                </Modal.Body>
                 <Modal.Footer>
 
                 </Modal.Footer>
@@ -99,23 +123,26 @@ function SystemBuilder() {
 
 let newId = 0
 
+function FindElement(queue: TSX[], id: string, perent?: TSX[]): TSX | null {
 
+    if (perent)
+        queue.push(...perent)
 
+    let element = queue.shift()
 
+    if (!element)
+        return null
 
-
-function FindElement(root: TSX[], id: string): TSX | null {
-    for (let element of root) {
-        if (element.props.id === id) {
-            return element
-        }
-        else if (element.children)
-            return FindElement(element.children!, id)
+    if (element.props.id === id) {
+        return element
     }
 
-    return null
-}
+    if (element.children)
+        queue.push(...element.children)
 
+
+    return FindElement(queue, id)
+}
 
 function TempletBuilder(elements: TSX[]) {
 
@@ -218,6 +245,7 @@ function ColElement(props: TSXProp, children: TSX[]) {
     return (
         <Col
             onClick={(e) => props.onClick!(e, props.id)}
+            onMouseEnter={() => console.log(props.id)}
             className={props.style?.className}
             key={props.id}
             style={props.style?.css}
