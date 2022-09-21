@@ -1,7 +1,8 @@
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, InputGroup, Modal, Row } from 'react-bootstrap';
-import ElementToJason from '../../Helper/ElementPaser'
+// import ElementToJason from '../../Helper/ElementPaser'
 import "./SystemBuilder.css"
+import { ElementBuilder } from "../../Helper/ElementBuilder"
 let systemMode = false
 
 interface TSXProp {
@@ -34,8 +35,10 @@ function SystemBuilder() {
 
     const handleClose = () => setShowBuilder(false);
 
-    function Builder(event: any, id: string) {
+    function Builder(event: any) {
         event.stopPropagation()
+
+        const id: string = event.target.id
 
         let element = FindElement([], id, tempJSON)
         if (!element)
@@ -45,16 +48,12 @@ function SystemBuilder() {
         setShowBuilder(true)
     }
     const [parentID, setParentID] = useState<string>("")
-    const [tempJSON, setTempJSON] = useState<TSX[]>([
+    const [tempJSON, setTempJSON] = useState<any[]>([
         {
-            element: "Container", props: { id: "root", onClick: Builder, style: { css: { border: "1px solid" } }, text: "New Container" }, children: []
+            element: "Container", props: { id: "root", style: { css: { border: "1px solid" } }, text: "New Container" }, children: []
         }]);
 
     const [showBuilder, setShowBuilder] = useState(false);
-
-    function PropsObject(obj: any) {
-
-    }
 
     function InsertProps() {
         let parent: any = FindElement([], parentID, tempJSON)
@@ -62,7 +61,7 @@ function SystemBuilder() {
             return
 
         let propsElements: Array<JSX.Element> = []
-        tsxProps.forEach(key => {
+        Object.keys(parent.props).forEach(key => {
             propsElements.push(
                 <Row>
                     <Col className="d-grid gap-4">
@@ -105,7 +104,8 @@ function SystemBuilder() {
 
         parent.props.text = ""
 
-        let newChild: TSX = { element: childElement, props: { id: `${newId++}`, text: `New: ${childElement}`, style: { css: { border: "1px solid" } }, onClick: Builder } }
+        // let newChild: TSX = { element: childElement, props: { id: `${newId++}`, text: `New: ${childElement}`, style: { css: { border: "1px solid" } }, onClick: Builder } }
+        let newChild: any = ElementBuilder(childElement, `${newId++}`)
 
         parent.children.push(newChild)
 
@@ -130,7 +130,10 @@ function SystemBuilder() {
 
     return (
         <>
-            {TempletBuilder(tempJSON)}
+            <Container
+                onClick={(e) => Builder(e)}>
+                {TempletBuilder(tempJSON)}
+            </Container>
 
             <Modal style={{ marginRight: "0px" }} show={showBuilder} onHide={handleClose} >
                 <Modal.Header closeButton>
@@ -159,7 +162,7 @@ function FindElement(queue: TSX[], id: string, perent?: TSX[]): TSX | null {
     if (!element)
         return null
 
-    if (element.props.id === id) {
+    if (element.props.id == id) {
         return element
     }
 
@@ -206,6 +209,7 @@ function Text(props: TSXProp) {
         <span
             className={props.style?.className}
             style={props.style?.css}
+            id={props.id}
             key={props.id}
         >
             {props.text}
@@ -224,7 +228,7 @@ function Select(props: TSXProp) {
 
     return (
         <Form.Select
-            onClick={(e) => props.onClick!(e, props.id)}
+            // onClick={(e) => props.onClick!(e, props.id)}
             className={props.style?.className}
             style={props.style?.css}
             key={props.id}
@@ -238,9 +242,9 @@ function Select(props: TSXProp) {
 function ContainerElement(props: TSXProp, children: TSX[]) {
     return (
         <Container
-            onClick={(e) => props.onClick!(e, props.id)}
+            // onClick={(e) => props.onClick!(e, props.id)}
             onMouseEnter={() => console.log(props.id)}
-
+            id={props.id}
             key={props.id}
             className={props.style?.className}
             style={props.style?.css}
@@ -255,8 +259,9 @@ function ContainerElement(props: TSXProp, children: TSX[]) {
 function RowElement(props: TSXProp, children: TSX[]) {
     return (
         <Row
-            onClick={(e) => props.onClick!(e, props.id)}
+            // onClick={(e) => props.onClick!(e, props.id)}
             onMouseEnter={() => console.log(props.id)}
+            id={props.id}
             key={props.id}
             className={props.style?.className}
             style={props.style?.css}
@@ -270,9 +275,10 @@ function RowElement(props: TSXProp, children: TSX[]) {
 function ColElement(props: TSXProp, children: TSX[]) {
     return (
         <Col
-            onClick={(e) => props.onClick!(e, props.id)}
+            // onClick={(e) => props.onClick!(e, props.id)}
             onMouseEnter={() => console.log(props.id)}
             className={props.style?.className}
+            id={props.id}
             key={props.id}
             style={props.style?.css}
         >
