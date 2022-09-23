@@ -2,37 +2,9 @@ import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 // import ElementToJason from '../../Helper/ElementPaser'
 import "./SystemBuilder.css"
-import { ElementBuilder } from "../../Helper/ElementBuilder"
-let systemMode = false
+import { ElementBuilder, Tsx, TsxBasicProps, TsxInputTextProps, TsxSelectProps } from "../../Helper/ElementBuilder"
 
-interface TSXProp {
-    id: string
-    type?: string
-    value?: string
-    style?: any
-    options?: TSX[]
-    onClick?: Function
-    text?: string
-}
-
-const tsxProps = [
-    "id",
-    "type",
-    "value",
-    "style",
-    "options",
-    "onclick",
-    "text"
-]
-
-interface TSX {
-    element: string
-    props: TSXProp
-    children?: TSX[]
-}
 function SystemBuilder() {
-    // systemMode = true
-
     const handleClose = () => setShowBuilder(false);
 
     function Builder(event: any) {
@@ -47,10 +19,11 @@ function SystemBuilder() {
         setParentID(id)
         setShowBuilder(true)
     }
+    const [editMode, setEditMode] = useState<boolean>(true)
     const [parentID, setParentID] = useState<string>("")
     const [tempJSON, setTempJSON] = useState<any[]>([
         {
-            element: "Container", props: { id: "root", style: { css: { border: "1px solid" } }, text: "New Container" }, children: []
+            element: "Container", props: { id: "root", css: { border: "1px solid" }, className: "", text: "New Container" }, children: []
         }]);
 
     const [showBuilder, setShowBuilder] = useState(false);
@@ -66,17 +39,69 @@ function SystemBuilder() {
                 <Row>
                     <Col className="d-grid gap-4">
                         <InputGroup>
-                            <InputGroup.Text className="col-2">{key}</InputGroup.Text>
-                            <Form.Control as="textarea" aria-label="With textarea" defaultValue={parent.props?.[key]} />
+                            <InputGroup.Text className="col-3">{key}</InputGroup.Text>
+                            <Form.Control id={key} as="textarea" aria-label="With textarea" defaultValue={JSON.stringify(parent.props?.[key])} />
                         </InputGroup>
                     </Col>
                 </Row>
             )
         })
 
+        function Delete(elementId: string) {
+            let child: any = FindElement([], elementId, tempJSON)
+            if (!child)
+                return
+
+            let parent: any = FindElement([], child.props.parentId, tempJSON)
+            if (!parent)
+                return
+
+            parent.children.forEach((element: Tsx<any>, index: number) => {
+                if (element.props.id == elementId)
+                    parent.children.splice(index, 1)
+            })
+
+            setTempJSON([DeepCopy(tempJSON[0])])
+
+        }
+
         return (
-            <Container fluid="md">{propsElements}</Container>
+            <Container fluid="md">
+                <Form onSubmit={(event) => OnPropsSave(event)}>
+                    {propsElements}
+                    <Row>
+                        <InputGroup >
+                            <Col className="d-grid gap-4" >
+                                <Button variant="primary" type="submit" style={{ width: "100%" }}>
+                                    Save
+                                </Button>
+
+                            </Col>
+                            <Col>
+                                <Button variant="danger" onClick={() => Delete(parentID)} style={{ width: "100%" }}>
+                                    Delete
+                                </Button>
+                            </Col>
+                        </InputGroup>
+                    </Row>
+                </Form>
+            </Container >
         )
+    }
+
+    function OnPropsSave(event: any) {
+        event.preventDefault();
+
+        let parent: Tsx<any> | null = FindElement([], parentID, tempJSON)
+        if (!parent)
+            return
+
+        for (let i = 0; i < event.target.length - 1; i++) {
+            parent!.props[event.target[i].id] = event.target[i].value
+            parent!.props[event.target[i].id] = JSON.parse(parent!.props[event.target[i].id])
+        }
+        setParentID(parent.props.id)
+        setTempJSON([DeepCopy(tempJSON[0])])
     }
 
     function InsertOptions() {
@@ -99,13 +124,14 @@ function SystemBuilder() {
         if (!parent)
             return
 
+
         if (!parent.children)
             parent.children = []
 
         parent.props.text = ""
 
         // let newChild: TSX = { element: childElement, props: { id: `${newId++}`, text: `New: ${childElement}`, style: { css: { border: "1px solid" } }, onClick: Builder } }
-        let newChild: any = ElementBuilder(childElement, `${newId++}`)
+        let newChild: Tsx<any> = ElementBuilder(childElement, `${newId++}`, parentID)
 
         parent.children.push(newChild)
 
@@ -130,14 +156,25 @@ function SystemBuilder() {
 
     return (
         <>
+
+            <Form.Check
+                type="switch"
+                id="custom-switch"
+                label="Edit Mode"
+                defaultChecked={editMode}
+                onChange={() => setEditMode(!editMode)}
+            />
             <Container
-                onClick={(e) => Builder(e)}>
+                onClick={(e) => {
+                    if (editMode)
+                        Builder(e)
+                }}>
                 {TempletBuilder(tempJSON)}
             </Container>
 
             <Modal style={{ marginRight: "0px" }} show={showBuilder} onHide={handleClose} >
                 <Modal.Header closeButton>
-                    <Modal.Title>Builder Options on id: {parentID}</Modal.Title>
+                    <Modal.Title>Builder Options on {FindElement([], parentID, tempJSON)?.element} id: {parentID}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {InsertProps()}
@@ -152,7 +189,7 @@ function SystemBuilder() {
 
 let newId = 0
 
-function FindElement(queue: TSX[], id: string, perent?: TSX[]): TSX | null {
+function FindElement(queue: Tsx<any>[], id: string, perent?: Tsx<any>[]): Tsx<any> | null {
 
     if (perent)
         queue.push(...perent)
@@ -172,13 +209,13 @@ function FindElement(queue: TSX[], id: string, perent?: TSX[]): TSX | null {
     return FindElement(queue, id)
 }
 
-function TempletBuilder(elements: TSX[]) {
+function TempletBuilder(elements: Tsx<any>[]) {
 
     if (!elements)
         return
 
     let templet: any = []
-    elements.forEach((item: TSX) => {
+    elements.forEach((item: Tsx<any>) => {
         templet.push(element(item.element, item.props, item.children))
     })
 
@@ -189,7 +226,7 @@ function TempletBuilder(elements: TSX[]) {
     )
 }
 
-function InputText(props: TSXProp, children: TSX[]) {
+function InputText(props: TsxInputTextProps, children: Tsx<any>[]) {
 
     return (
         <>
@@ -203,12 +240,12 @@ function InputText(props: TSXProp, children: TSX[]) {
     )
 }
 
-function Text(props: TSXProp) {
+function Text(props: TsxBasicProps) {
 
     return (
         <span
-            className={props.style?.className}
-            style={props.style?.css}
+            className={props.className}
+            style={props.css}
             id={props.id}
             key={props.id}
         >
@@ -217,20 +254,19 @@ function Text(props: TSXProp) {
     )
 }
 
-function Select(props: TSXProp) {
+function Select(props: TsxSelectProps) {
 
     let elementOptions: any = []
     let optionId = 0
-    props.options?.forEach((option: TSX) => {
+    props.options.forEach((option: Tsx<any>) => {
 
         elementOptions.push(<option value={option.props.value} key={props.id + `${optionId++}`}>{option.props.text}</option>)
     })
 
     return (
         <Form.Select
-            // onClick={(e) => props.onClick!(e, props.id)}
-            className={props.style?.className}
-            style={props.style?.css}
+            className={props.className}
+            style={props.css}
             key={props.id}
         >
             {props.text}
@@ -239,15 +275,13 @@ function Select(props: TSXProp) {
     )
 }
 
-function ContainerElement(props: TSXProp, children: TSX[]) {
+function ContainerElement(props: TsxBasicProps, children: Tsx<any>[]) {
     return (
         <Container
-            // onClick={(e) => props.onClick!(e, props.id)}
-            onMouseEnter={() => console.log(props.id)}
             id={props.id}
             key={props.id}
-            className={props.style?.className}
-            style={props.style?.css}
+            className={props.className}
+            style={props.css}
         >
             {props.text}
             {TempletBuilder(children)}
@@ -256,15 +290,13 @@ function ContainerElement(props: TSXProp, children: TSX[]) {
     )
 }
 
-function RowElement(props: TSXProp, children: TSX[]) {
+function RowElement(props: TsxBasicProps, children: Tsx<any>[]) {
     return (
         <Row
-            // onClick={(e) => props.onClick!(e, props.id)}
-            onMouseEnter={() => console.log(props.id)}
             id={props.id}
             key={props.id}
-            className={props.style?.className}
-            style={props.style?.css}
+            className={props.className}
+            style={props.css}
         >
             {props.text}
             {TempletBuilder(children)}
@@ -272,15 +304,13 @@ function RowElement(props: TSXProp, children: TSX[]) {
     )
 }
 
-function ColElement(props: TSXProp, children: TSX[]) {
+function ColElement(props: TsxBasicProps, children: Tsx<any>[]) {
     return (
         <Col
-            // onClick={(e) => props.onClick!(e, props.id)}
-            onMouseEnter={() => console.log(props.id)}
-            className={props.style?.className}
             id={props.id}
             key={props.id}
-            style={props.style?.css}
+            className={props.className}
+            style={props.css}
         >
             {props.text}
             {TempletBuilder(children)}
@@ -297,7 +327,7 @@ const elementSwitch: { [K: string]: Function } = {
     Col: ColElement
 };
 
-function element(name: string, props: TSXProp, children?: TSX[]) {
+function element(name: string, props: any, children?: Tsx<any>[]) {
     if (elementSwitch[name]) {
         return elementSwitch[name](props, children);
     }
