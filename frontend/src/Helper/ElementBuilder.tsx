@@ -11,7 +11,8 @@ const ElementBuilderSwitch: { [K: string]: Function } = {
     Col: BuildCol,
     Select: BuildSelect,
     Text: BuildText,
-    InputText: BuildInputText
+    InputText: BuildInputText,
+    Img: BuildImage
 };
 
 function Element(element: string, id: any, parentId: string, children?: []) {
@@ -72,6 +73,16 @@ export interface TsxSelectProps {
     className: string
     options: Tsx<any>[]
 }
+
+export interface TsxImageProps {
+    id: string
+    parentId: string
+    text: string
+    css: {}
+    className: string
+    src: string
+}
+
 
 
 
@@ -155,6 +166,23 @@ function BuildInputText(elementId: string, parentId: string) {
             css: {},
             className: "",
             type: "text"
+        },
+    }
+
+    return (tsx)
+}
+
+function BuildImage(elementId: string, parentId: string) {
+
+    let tsx: Tsx<TsxImageProps> = {
+        element: "Img",
+        props: {
+            id: elementId,
+            parentId: parentId,
+            text: "New Image",
+            css: {},
+            className: "",
+            src: "https://images.unsplash.com/photo-1611915387288-fd8d2f5f928b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8MXx8fGVufDB8fHx8&w=1000&q=80"
         },
     }
 

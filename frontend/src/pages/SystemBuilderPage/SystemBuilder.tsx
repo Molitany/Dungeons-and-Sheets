@@ -2,7 +2,7 @@ import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 // import ElementToJason from '../../Helper/ElementPaser'
 import "./SystemBuilder.css"
-import { ElementBuilder, Tsx, TsxBasicProps, TsxInputTextProps, TsxSelectProps } from "../../Helper/ElementBuilder"
+import { ElementBuilder, Tsx, TsxBasicProps, TsxImageProps, TsxInputTextProps, TsxSelectProps } from "../../Helper/ElementBuilder"
 
 function SystemBuilder() {
     const handleClose = () => setShowBuilder(false);
@@ -96,7 +96,7 @@ function SystemBuilder() {
         if (!parent)
             return
 
-        for (let i = 0; i < event.target.length - 1; i++) {
+        for (let i = 0; i < event.target.length - 2; i++) {
             parent!.props[event.target[i].id] = event.target[i].value
             parent!.props[event.target[i].id] = JSON.parse(parent!.props[event.target[i].id])
         }
@@ -318,13 +318,27 @@ function ColElement(props: TsxBasicProps, children: Tsx<any>[]) {
     )
 }
 
+function ImgElement(props: TsxImageProps, children: Tsx<any>[]) {
+    return (
+        <img
+            id={props.id}
+            key={props.id}
+            className={props.className}
+            style={props.css}
+            src={props.src}
+        >
+        </img>
+    )
+}
+
 const elementSwitch: { [K: string]: Function } = {
     InputText: InputText,
     Text: Text,
     Select: Select,
     Container: ContainerElement,
     Row: RowElement,
-    Col: ColElement
+    Col: ColElement,
+    Img: ImgElement
 };
 
 function element(name: string, props: any, children?: Tsx<any>[]) {
